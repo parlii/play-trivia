@@ -1,3 +1,4 @@
+import DarkModeToggle from "./DarkModeToggle";
 import Link from "next/link";
 
 const NavBar = () => {
@@ -21,6 +22,7 @@ const NavBar = () => {
           </Link>
         </li>
       </ul>
+      {/* <DarkModeToggle /> */}
     </nav>
   );
 };

@@ -8,26 +8,26 @@ import { useRouter } from "next/router";
 export default function HomePage() {
   const [score, setScore] = useState(0);
   const [mistakes, setMistakes] = useState(0);
-  const [remainingTime, setRemainingTime] = useState(10 * 60); // time remaining in seconds
+  // const [remainingTime, setRemainingTime] = useState(10 * 60); // time remaining in seconds
   const [question, setQuestion] = useState<Question | null>(null);
   const router = useRouter();
 
-  useEffect(() => {
-    const timerId = setInterval(() => {
-      setRemainingTime((prevRemainingTime) => prevRemainingTime - 1);
-    }, 1000);
+  // useEffect(() => {
+  //   const timerId = setInterval(() => {
+  //     setRemainingTime((prevRemainingTime) => prevRemainingTime - 1);
+  //   }, 1000);
 
-    return () => clearInterval(timerId);
-  }, []);
+  //   return () => clearInterval(timerId);
+  // }, []);
 
-  useEffect(() => {
-    if (remainingTime <= 0) {
-      router.push({
-        pathname: "/gameover",
-        query: { score },
-      });
-    }
-  }, [remainingTime]);
+  // useEffect(() => {
+  //   if (remainingTime <= 0) {
+  //     router.push({
+  //       pathname: "/gameover",
+  //       query: { score },
+  //     });
+  //   }
+  // }, [remainingTime]);
 
   const loadQuestion = async () => {
     try {
@@ -43,7 +43,7 @@ export default function HomePage() {
     loadQuestion();
   }, []);
 
-  const handleOptionSelected = (isCorrect: boolean) => {
+  const handleOptionSelected = (isCorrect: boolean | null) => {
     if (isCorrect) {
       setScore(score + 1);
     } else {
@@ -55,27 +55,39 @@ export default function HomePage() {
         });
       }
     }
-    loadQuestion(); // fetch a new question
+    // loadQuestion(); // fetch a new question
   };
 
   return (
-    <div>
-      <h1>Welcome to Nepali Trivia</h1>
-      <p>Score: {score}</p>
-      <p>Mistakes: {mistakes}</p>
-      <p>
-        Time remaining: {Math.floor(remainingTime / 60)}:
-        {remainingTime % 60 < 10 ? "0" : ""}
-        {remainingTime % 60}
-      </p>
-      {question ? (
-        <TriviaQuestion
-          question={question}
-          onOptionSelected={handleOptionSelected}
-        />
-      ) : (
-        <p>Loading question...</p>
-      )}
+    <div className="flex flex-col h-full">
+      <div className="flex items-center justify-between p-4">
+        {/* <h1 className="text-3xl font-semibold text-gray-900 dark:text-gray-200">
+          Nepali Trivia
+        </h1> */}
+        <p className="text-lg font-medium text-gray-700 dark:text-gray-300">
+          Score: {score}
+        </p>
+        <p className="text-lg font-medium text-gray-700 dark:text-gray-300">
+          Mistakes: {mistakes}
+        </p>
+      </div>
+      <div className="flex-1">
+        {question ? (
+          <TriviaQuestion
+            question={question}
+            onOptionSelected={handleOptionSelected}
+          />
+        ) : (
+          <p>Asking AI for a Nepali trivia question...</p>
+        )}
+      </div>
+      {/* <div className="p-4 text-right">
+        <p className="text-lg font-medium text-gray-700 dark:text-gray-300">
+          Time remaining: {Math.floor(remainingTime / 60)}:
+          {remainingTime % 60 < 10 ? "0" : ""}
+          {remainingTime % 60}
+        </p>
+      </div> */}
     </div>
   );
 }
