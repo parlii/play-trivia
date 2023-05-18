@@ -31,7 +31,6 @@ export default function LeaderboardPage() {
 
   return (
     <div>
-      <Navbar />
       <h1>Leaderboard</h1>
       <table>
         <thead>
