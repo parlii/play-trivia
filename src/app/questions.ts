@@ -5,15 +5,15 @@ export interface Question {
   // confidence: Confidence;
 }
 
-export interface Confidence {
-  //level can be high, medium, or low
-  level: string;
-  explanation: string;
-}
-export interface Option {
-  option: string;
-  // explanation: string;
-}
+// export interface Confidence {
+//   //level can be high, medium, or low
+//   level: string;
+//   explanation: string;
+// }
+// export interface Option {
+//   option: string;
+//   // explanation: string;
+// }
 
 // const questions: Question[] = [
 //   {

@@ -60,7 +60,6 @@ export default function HomePage() {
 
   return (
     <div>
-      <Navbar />
       <h1>Welcome to Nepali Trivia</h1>
       <p>Score: {score}</p>
       <p>Mistakes: {mistakes}</p>
