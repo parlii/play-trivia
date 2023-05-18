@@ -1,19 +1,17 @@
-import questions, { Question } from "../app/questions";
 import { useEffect, useState } from "react";
 
 import Navbar from "@/app/components/NavBar";
+import { Question } from "../app/questions";
 import TriviaQuestion from "../app/components/TriviaQuestion";
 import { useRouter } from "next/router";
 
 export default function HomePage() {
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [score, setScore] = useState(0);
   const [mistakes, setMistakes] = useState(0);
   const [remainingTime, setRemainingTime] = useState(10 * 60); // time remaining in seconds
-
+  const [question, setQuestion] = useState<Question | null>(null);
   const router = useRouter();
 
-  // Update remaining time every second
   useEffect(() => {
     const timerId = setInterval(() => {
       setRemainingTime((prevRemainingTime) => prevRemainingTime - 1);
@@ -22,7 +20,6 @@ export default function HomePage() {
     return () => clearInterval(timerId);
   }, []);
 
-  // End game after 10 minutes of inactivity
   useEffect(() => {
     if (remainingTime <= 0) {
       router.push({
@@ -31,6 +28,20 @@ export default function HomePage() {
       });
     }
   }, [remainingTime]);
+
+  const loadQuestion = async () => {
+    try {
+      const response = await fetch("/api/generateQuestion");
+      const data = await response.json();
+      setQuestion(data);
+    } catch (error) {
+      console.error("Failed to load question", error);
+    }
+  };
+
+  useEffect(() => {
+    loadQuestion();
+  }, []);
 
   const handleOptionSelected = (isCorrect: boolean) => {
     if (isCorrect) {
@@ -44,8 +55,7 @@ export default function HomePage() {
         });
       }
     }
-    setCurrentQuestionIndex(currentQuestionIndex + 1);
-    setRemainingTime(10 * 60); // reset the timer
+    loadQuestion(); // fetch a new question
   };
 
   return (
@@ -59,13 +69,13 @@ export default function HomePage() {
         {remainingTime % 60 < 10 ? "0" : ""}
         {remainingTime % 60}
       </p>
-      {currentQuestionIndex < questions.length ? (
+      {question ? (
         <TriviaQuestion
-          question={questions[currentQuestionIndex]}
+          question={question}
           onOptionSelected={handleOptionSelected}
         />
       ) : (
-        <p>No more questions!</p>
+        <p>Loading question...</p>
       )}
     </div>
   );

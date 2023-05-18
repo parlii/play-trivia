@@ -1,0 +1,29 @@
+{
+  "folders": [
+    {
+      "path": ".."
+    },
+    {
+      "path": "/Users/parlirizal/parli/openai"
+    },
+    {
+      "path": "/Users/parlirizal/parli/openai-cookbook"
+    },
+    {
+      "path": "/Users/parlirizal/parli/autogptparli/Auto-GPT"
+    }
+  ],
+  "settings": {},
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Python: Nepali Trivia",
+        "type": "python",
+        "request": "launch",
+        "program": "${workspaceFolder:openai}/main.py",
+        "console": "integratedTerminal"
+      }
+    ]
+  }
+}
