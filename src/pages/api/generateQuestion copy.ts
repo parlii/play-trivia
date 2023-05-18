@@ -14,8 +14,24 @@ const parser = StructuredOutputParser.fromZodSchema(
   z.object({
     question: z.string().describe("Nepali trivia question"),
     options: z
-      .array(z.string().describe("4 options for the trivia question"))
+      .array(
+        z.object({
+          option: z.string().describe("Option 1 to trivia question"),
+          explanation: z.string().describe("explanation of the option"),
+        })
+      )
       .length(4),
+    answer: z.string().describe("Answer to trivia question"),
+    confidence: z.object({
+      level: z
+        .string()
+        .describe("Confidence level of the answer (high/medium/low)"),
+      explanation: z
+        .string()
+        .describe(
+          "explanation of the confidence level, cite a reputable source"
+        ),
+    }),
   })
 );
 
@@ -34,7 +50,6 @@ const prompt = new PromptTemplate({
 const model = new OpenAI({
   openAIApiKey: process.env.OPENAI_API_KEY,
   temperature: 0.8,
-  modelName: "gpt-3.5-turbo",
 });
 
 // Initialize an LLMChain with the OpenAI model and the prompt
@@ -63,7 +78,6 @@ export default async function handler(
 
     try {
       const parsedResponse: Question = await parser.parse(response.text);
-      console.log(parsedResponse);
       res.status(200).json(parsedResponse);
     } catch (e) {
       console.error("Failed to parse bad output: ", e);

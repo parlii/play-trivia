@@ -1,8 +1,8 @@
 export interface Question {
   question: string;
-  options: Option[];
-  answer: string;
-  confidence: Confidence;
+  options: string[];
+  // answer: string;
+  // confidence: Confidence;
 }
 
 export interface Confidence {
@@ -12,7 +12,7 @@ export interface Confidence {
 }
 export interface Option {
   option: string;
-  explanation: string;
+  // explanation: string;
 }
 
 // const questions: Question[] = [
