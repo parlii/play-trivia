@@ -78,16 +78,13 @@ export default function HomePage() {
             onOptionSelected={handleOptionSelected}
           />
         ) : (
-          <p>Asking AI for a Nepali trivia question...</p>
+          <div className="p-6 rounded-md shadow-md w-full max-w-lg mx-auto mt-10">
+            <h2 className="text-xl font-semibold mb-4">
+              Asking AI for a Nepali trivia question...
+            </h2>
+          </div>
         )}
       </div>
-      {/* <div className="p-4 text-right">
-        <p className="text-lg font-medium text-gray-700 dark:text-gray-300">
-          Time remaining: {Math.floor(remainingTime / 60)}:
-          {remainingTime % 60 < 10 ? "0" : ""}
-          {remainingTime % 60}
-        </p>
-      </div> */}
-    </div>
+     
   );
 }
