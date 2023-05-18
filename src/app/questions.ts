@@ -2,10 +2,16 @@ export interface Question {
   question: string;
   options: Option[];
   answer: string;
+  confidence: Confidence;
 }
 
+export interface Confidence {
+  //level can be high, medium, or low
+  level: string;
+  explanation: string;
+}
 export interface Option {
-  text: string;
+  option: string;
   explanation: string;
 }
 
