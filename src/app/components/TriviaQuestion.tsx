@@ -11,13 +11,13 @@ const TriviaQuestion: React.FC<TriviaQuestionProps> = ({
   onOptionSelected,
 }) => {
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
-  const [showBlinkingEffect, setShowBlinkingEffect] = useState(false);
-  const [answerResponse, setAnswerResponse] =
+  const [checkAnswerResponse, setcheckAnswerResponse] =
     useState<CheckAnswerResponse | null>(null);
+  const [loadingOption, setLoadingOption] = useState<string | null>(null);
 
   const handleOptionClick = async (userSelectedOption: string) => {
     setSelectedOption(userSelectedOption);
-    setShowBlinkingEffect(true);
+    setLoadingOption(userSelectedOption);
 
     const response = await fetch("/api/checkAnswer", {
       method: "POST",
@@ -26,32 +26,33 @@ const TriviaQuestion: React.FC<TriviaQuestionProps> = ({
     });
     const data: CheckAnswerResponse = await response.json();
 
-    setAnswerResponse(data);
-    onOptionSelected(data.correct_answer === userSelectedOption);
-    setShowBlinkingEffect(false);
+    setcheckAnswerResponse(data);
+    setLoadingOption(null);
   };
 
   useEffect(() => {
-    setAnswerResponse(null);
+    setcheckAnswerResponse(null);
+    setSelectedOption(null);
   }, [question]);
 
   return (
-    <div className=" p-6 rounded-md shadow-md w-full max-w-lg mx-auto mt-10">
+    <div className="p-6 rounded-md shadow-md w-full max-w-lg mx-auto mt-10">
       <h2 className="text-xl font-semibold mb-4">{question.question}</h2>
       <div className="grid grid-cols-2 gap-4">
         {question.options.map((option, index) => {
           const isSelected = selectedOption === option;
           const isOptionCorrect =
-            isSelected && answerResponse && answerResponse.correct;
+            isSelected && checkAnswerResponse && checkAnswerResponse.correct;
           const isOptionIncorrect =
-            isSelected && answerResponse && !answerResponse.correct;
+            isSelected && checkAnswerResponse && !checkAnswerResponse.correct;
+          const isLoading = loadingOption === option;
 
           return (
             <button
               key={index}
               onClick={() => handleOptionClick(option)}
               className={`${
-                isSelected && showBlinkingEffect
+                isLoading
                   ? "animate-blinking bg-green-400 text-white"
                   : isOptionCorrect
                   ? "bg-green-400 text-white"
@@ -65,7 +66,7 @@ const TriviaQuestion: React.FC<TriviaQuestionProps> = ({
           );
         })}
       </div>
-      <p className="mt-4 text-center">{answerResponse?.explanation}</p>
+      <p className="mt-4 text-center">{checkAnswerResponse?.explanation}</p>
     </div>
   );
 };
