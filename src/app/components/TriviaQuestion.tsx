@@ -1,6 +1,8 @@
 import { CheckAnswerResponse, Question } from "../questions";
 import { useEffect, useState } from "react";
 
+import LoadingDots from "./LoadingDots";
+
 interface TriviaQuestionProps {
   question: Question;
   onOptionSelected: (isCorrect: boolean | null) => void;
@@ -67,6 +69,13 @@ const TriviaQuestion: React.FC<TriviaQuestionProps> = ({
         })}
       </div>
       <p className="mt-4 text-center">{checkAnswerResponse?.explanation}</p>
+
+      {loadingOption && (
+        <p className="mt-4 text-center">
+          Asking AI if your response is correct
+          <LoadingDots />
+        </p>
+      )}
     </div>
   );
 };
