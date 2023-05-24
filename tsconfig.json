@@ -27,8 +27,8 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    ".next/types/**/*.ts",
-    "initializeDb.ts"
+    ".next/types/**/*.ts"
+    // "initializeDb.ts"
   ],
   "exclude": ["node_modules"]
 }
