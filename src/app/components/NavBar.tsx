@@ -1,4 +1,3 @@
-import DarkModeToggle from "./DarkModeToggle";
 import Link from "next/link";
 
 const NavBar = () => {
