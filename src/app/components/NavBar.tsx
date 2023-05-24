@@ -12,14 +12,14 @@ const NavBar = () => {
             Home
           </Link>
         </li>
-        <li>
+        {/* <li>
           <Link
             href="/leaderboard"
             className="text-gray-900 dark:text-gray-200 hover:text-blue-500"
           >
             Leaderboard
           </Link>
-        </li>
+        </li> */}
       </ul>
       {/* <DarkModeToggle /> */}
     </nav>
