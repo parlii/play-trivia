@@ -12,6 +12,20 @@ export default function HomePage() {
   const [question, setQuestion] = useState<Question | null>(null);
   const router = useRouter();
 
+  const LoadingDots = () => {
+    const [dots, setDots] = useState("");
+
+    useEffect(() => {
+      const timer = setInterval(() => {
+        setDots((dots) => (dots.length < 9 ? dots + "." : ""));
+      }, 500); // This will update every half second
+
+      return () => clearInterval(timer); // Clear interval on unmount
+    }, []);
+
+    return <span>{dots}</span>;
+  };
+
   // useEffect(() => {
   //   const timerId = setInterval(() => {
   //     setRemainingTime((prevRemainingTime) => prevRemainingTime - 1);
@@ -80,7 +94,8 @@ export default function HomePage() {
         ) : (
           <div className="p-6 rounded-md shadow-md w-full max-w-lg mx-auto mt-10">
             <h2 className="text-xl font-semibold mb-4">
-              Asking AI for a Nepali trivia question...
+              Asking AI for a Nepali trivia question
+              <LoadingDots />
             </h2>
           </div>
         )}
