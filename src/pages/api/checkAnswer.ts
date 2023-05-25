@@ -12,21 +12,21 @@ import { z } from "zod";
 
 const parser = StructuredOutputParser.fromZodSchema(
   z.object({
-    correct: z.boolean().describe("was the answer correct?"),
+    correct: z.boolean().describe("was the userAnswer correct?"),
     explanation: z
       .string()
       .describe(
-        "explanation of why the user choosen answer is correct/incorrect and a description of the correct answer"
+        "explanation of why the user choosen userAnswer is correct/incorrect and a description of the correct userAnswer"
       ),
-    correct_answer: z
+    correct_userAnswer: z
       .string()
       .describe(
-        "the correct answer from the 4 options listed to the trivia question"
+        "the correct userAnswer from the 4 options listed to the trivia question"
       ),
     confidence: z
       .enum(["high", "medium", "low"])
       .describe(
-        "confidence level of the AI in its judgement of the user's choosen answer"
+        "confidence level of the AI in its judgement of the user's choosen userAnswer"
       ),
   })
 );
@@ -35,15 +35,15 @@ const formatInstructions = parser.getFormatInstructions();
 
 // Initialize the PromptTemplate
 const prompt = new PromptTemplate({
-  template: `This trivia question  about {topic} was presented to the user with these 4 options. {question}. The user picked: {answer}\n Was it correct? The correct answer MUST be one of the 4 options listed.  \n{format_instructions}`,
-  inputVariables: ["question", "answer", "topic"],
+  template: `Given the following trivia question and four options provided to the user about {topic}: {question}.  The user selected: {userAnswer}\n Was their answer correct? Please note, the correct userAnswer is guaranteed to be within the provided options.  \n{format_instructions}`,
+  inputVariables: ["question", "userAnswer", "topic"],
   partialVariables: { format_instructions: formatInstructions },
 });
 
 // You can initialize the model using the environment variables as per LangChain documentation
 const model = new OpenAI({
   openAIApiKey: process.env.OPENAI_API_KEY,
-  temperature: 0.8,
+  temperature: 0.5,
   modelName: "gpt-3.5-turbo",
 });
 
@@ -61,14 +61,14 @@ export default async function handler(
 
   const topic: string = req.query.topic as string;
 
-  // extract question and answer from the request
+  // extract question and userAnswer from the request
   const { question, userSelectedOption } = req.body;
   console.log(question, userSelectedOption);
 
   const input = await prompt.format({
     topic: topic,
     question: JSON.stringify(question),
-    answer: userSelectedOption,
+    userAnswer: userSelectedOption,
   });
 
   console.log(input);
@@ -77,7 +77,7 @@ export default async function handler(
     // Use the chain to generate a question
     const response = await chain.call({
       question: JSON.stringify(question),
-      answer: userSelectedOption,
+      userAnswer: userSelectedOption,
       topic: topic,
     });
 
