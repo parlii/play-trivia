@@ -6,11 +6,13 @@ import LoadingDots from "./LoadingDots";
 interface TriviaQuestionProps {
   question: Question;
   onOptionSelected: (isCorrect: boolean | null) => void;
+  topic: string;
 }
 
 const TriviaQuestion: React.FC<TriviaQuestionProps> = ({
   question,
   onOptionSelected,
+  topic,
 }) => {
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [checkAnswerResponse, setcheckAnswerResponse] =
@@ -21,7 +23,7 @@ const TriviaQuestion: React.FC<TriviaQuestionProps> = ({
     setSelectedOption(userSelectedOption);
     setLoadingOption(userSelectedOption);
 
-    const response = await fetch("/api/checkAnswer", {
+    const response = await fetch("/api/checkAnswer?topic=${topic}", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ question, userSelectedOption }),

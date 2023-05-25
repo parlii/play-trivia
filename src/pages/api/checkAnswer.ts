@@ -35,8 +35,8 @@ const formatInstructions = parser.getFormatInstructions();
 
 // Initialize the PromptTemplate
 const prompt = new PromptTemplate({
-  template: `This trivia question  about Nepali culture was presented to the user with these 4 options. {question}. The user picked: {answer}\n Was it correct? The correct answer should be one of the 4 options listed.  \n{format_instructions}`,
-  inputVariables: ["question", "answer"],
+  template: `This trivia question  about {topic} was presented to the user with these 4 options. {question}. The user picked: {answer}\n Was it correct? The correct answer MUST be one of the 4 options listed.  \n{format_instructions}`,
+  inputVariables: ["question", "answer", "topic"],
   partialVariables: { format_instructions: formatInstructions },
 });
 
@@ -59,6 +59,8 @@ export default async function handler(
     return res.status(405).json({ message: "Method not allowed" });
   }
 
+  const topic: string = req.query.topic as string;
+
   // extract question and answer from the request
   const { question, userSelectedOption } = req.body;
   console.log(question, userSelectedOption);
@@ -68,6 +70,7 @@ export default async function handler(
     const response = await chain.call({
       question: question,
       answer: userSelectedOption,
+      topic: topic,
     });
 
     try {

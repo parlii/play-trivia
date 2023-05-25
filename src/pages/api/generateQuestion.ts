@@ -12,10 +12,11 @@ import { z } from "zod";
 
 const parser = StructuredOutputParser.fromZodSchema(
   z.object({
-    question: z.string().describe("Nepali trivia question"),
+    question: z.string().describe("A trivia question"),
     options: z
       .array(z.string().describe("4 options for the trivia question"))
       .length(4),
+    answer: z.string().describe("correct answer to the trivia question"),
   })
 );
 
@@ -23,8 +24,8 @@ const formatInstructions = parser.getFormatInstructions();
 
 // Initialize the PromptTemplate
 const prompt = new PromptTemplate({
-  template: `Generate a trivia question about Nepali culture. Difficulty level: {level}\n{format_instructions}`,
-  inputVariables: ["level"],
+  template: `Generate a trivia question about this topic: {topic}. Difficulty level: {level}\n{format_instructions}`,
+  inputVariables: ["level", "topic"],
   partialVariables: { format_instructions: formatInstructions },
 });
 
@@ -47,15 +48,18 @@ export default async function handler(
     return res.status(405).json({ message: "Method not allowed" });
   }
 
-  const input = await prompt.format({
-    level: "hard",
-  });
+  const topic: string = req.query.topic as string;
 
-  console.log(input);
+  // const input = await prompt.format({
+  //   level: "easy",
+  //   topic: topic,
+  // });
+
+  // console.log(input);
 
   try {
     // Use the chain to generate a question
-    const response = await chain.call({ level: "hard" });
+    const response = await chain.call({ level: "hard", topic: topic });
 
     try {
       const parsedResponse: Question = await parser.parse(response.text);

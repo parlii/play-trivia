@@ -10,6 +10,8 @@ export default function HomePage() {
   const [mistakes, setMistakes] = useState(0);
   // const [remainingTime, setRemainingTime] = useState(10 * 60); // time remaining in seconds
   const [question, setQuestion] = useState<Question | null>(null);
+  const [topic, setTopic] = useState<string>("");
+  const [inputValue, setInputValue] = useState("");
   const router = useRouter();
 
   const LoadingDots = () => {
@@ -45,7 +47,11 @@ export default function HomePage() {
 
   const loadQuestion = async () => {
     try {
-      const response = await fetch("/api/generateQuestion");
+      console.log(topic);
+      if (topic == "") {
+        alert("no topic you fool");
+      }
+      const response = await fetch(`/api/generateQuestion?topic=${topic}`);
       const data = await response.json();
       setQuestion(data);
     } catch (error) {
@@ -54,8 +60,10 @@ export default function HomePage() {
   };
 
   useEffect(() => {
-    loadQuestion();
-  }, []);
+    if (topic !== "") {
+      loadQuestion();
+    }
+  }, [topic]);
 
   const handleOptionSelected = (isCorrect: boolean | null) => {
     if (isCorrect) {
@@ -75,31 +83,59 @@ export default function HomePage() {
   return (
     <div className="flex flex-col h-full">
       <div className="flex items-center justify-between p-4">
-        {/* <h1 className="text-3xl font-semibold text-gray-900 dark:text-gray-200">
-          Nepali Trivia
-        </h1> */}
-        <p className="text-lg font-medium text-gray-700 dark:text-gray-300">
-          Score: {score}
-        </p>
-        <p className="text-lg font-medium text-gray-700 dark:text-gray-300">
-          Mistakes: {mistakes}
-        </p>
-      </div>
-      <div className="flex-1">
-        {question ? (
-          <TriviaQuestion
-            question={question}
-            onOptionSelected={handleOptionSelected}
-          />
+        {/* new input field to select topic */}
+        {topic ? (
+          <>
+            <p className="text-lg font-medium text-gray-700 dark:text-gray-300">
+              Topic: {topic}
+            </p>
+            <p className="text-lg font-medium text-gray-700 dark:text-gray-300">
+              Score: {score}
+            </p>
+            <p className="text-lg font-medium text-gray-700 dark:text-gray-300">
+              Mistakes: {mistakes}
+            </p>
+          </>
         ) : (
-          <div className="p-6 rounded-md shadow-md w-full max-w-lg mx-auto mt-10">
-            <h2 className="text-xl font-semibold mb-4">
-              Asking AI for a Nepali trivia question
-              <LoadingDots />
-            </h2>
+          <div>
+            <input
+              placeholder="Enter a topic"
+              style={{ color: "black" }} // change text color here
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+            />
+            <button
+              onClick={() => {
+                if (inputValue) {
+                  setTopic(inputValue);
+                } else {
+                  alert("Please enter a topic");
+                }
+              }}
+            >
+              Load Question
+            </button>
           </div>
         )}
       </div>
+      {topic && (
+        <div className="flex-1">
+          {question && question.options ? (
+            <TriviaQuestion
+              question={question}
+              onOptionSelected={handleOptionSelected}
+              topic={topic}
+            />
+          ) : (
+            <div className="p-6 rounded-md shadow-md w-full max-w-lg mx-auto mt-10">
+              <h2 className="text-xl font-semibold mb-4">
+                Asking AI for a {topic} trivia question
+                <LoadingDots />
+              </h2>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
