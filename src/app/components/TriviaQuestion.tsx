@@ -5,13 +5,13 @@ import LoadingDots from "./LoadingDots";
 
 interface TriviaQuestionProps {
   question: Question;
-  onOptionSelected: (isCorrect: boolean | null) => void;
+  // onOptionSelected: (isCorrect: boolean | null) => void;
   topic: string;
 }
 
 const TriviaQuestion: React.FC<TriviaQuestionProps> = ({
   question,
-  onOptionSelected,
+  // onOptionSelected,
   topic,
 }) => {
   const [selectedOption, setSelectedOption] = useState<string | null>(null);

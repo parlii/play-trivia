@@ -6,8 +6,8 @@ import TriviaQuestion from "../app/components/TriviaQuestion";
 import { useRouter } from "next/router";
 
 export default function HomePage() {
-  const [score, setScore] = useState(0);
-  const [mistakes, setMistakes] = useState(0);
+  // const [score, setScore] = useState(0);
+  // const [mistakes, setMistakes] = useState(0);
   // const [remainingTime, setRemainingTime] = useState(10 * 60); // time remaining in seconds
   const [question, setQuestion] = useState<Question | null>(null);
   const [topic, setTopic] = useState<string>("");
@@ -46,6 +46,7 @@ export default function HomePage() {
   // }, [remainingTime]);
 
   const loadQuestion = async () => {
+    setQuestion(null);
     try {
       console.log(topic);
       if (topic == "") {
@@ -65,20 +66,20 @@ export default function HomePage() {
     }
   }, [topic]);
 
-  const handleOptionSelected = (isCorrect: boolean | null) => {
-    if (isCorrect) {
-      setScore(score + 1);
-    } else {
-      setMistakes(mistakes + 1);
-      if (mistakes + 1 >= 10) {
-        router.push({
-          pathname: "/gameover",
-          query: { score },
-        });
-      }
-    }
-    // loadQuestion(); // fetch a new question
-  };
+  // const handleOptionSelected = (isCorrect: boolean | null) => {
+  //   if (isCorrect) {
+  //     // setScore(score + 1);
+  //   } else {
+  //     // setMistakes(mistakes + 1);
+  //     if (mistakes + 1 >= 10) {
+  //       router.push({
+  //         pathname: "/gameover",
+  //         query: { score },
+  //       });
+  //     }
+  //   }
+  //   // loadQuestion(); // fetch a new question
+  // };
 
   return (
     <div className="flex flex-col h-full">
@@ -89,12 +90,18 @@ export default function HomePage() {
             <p className="text-lg font-medium text-gray-700 dark:text-gray-300">
               Topic: {topic}
             </p>
-            <p className="text-lg font-medium text-gray-700 dark:text-gray-300">
+            <button
+              className="ml-2 bg-blue-500 hover:bg-blue-700 text-white font-bold px-4 rounded"
+              onClick={() => loadQuestion()}
+            >
+              Load Another Question
+            </button>
+            {/* <p className="text-lg font-medium text-gray-700 dark:text-gray-300">
               Score: {score}
-            </p>
-            <p className="text-lg font-medium text-gray-700 dark:text-gray-300">
+            </p> */}
+            {/* <p className="text-lg font-medium text-gray-700 dark:text-gray-300">
               Mistakes: {mistakes}
-            </p>
+            </p> */}
           </>
         ) : (
           <div>
@@ -105,6 +112,7 @@ export default function HomePage() {
               onChange={(e) => setInputValue(e.target.value)}
             />
             <button
+              className="ml-2 bg-blue-500 hover:bg-blue-700 text-white font-bold px-4 rounded"
               onClick={() => {
                 if (inputValue) {
                   setTopic(inputValue);
@@ -123,13 +131,13 @@ export default function HomePage() {
           {question && question.options ? (
             <TriviaQuestion
               question={question}
-              onOptionSelected={handleOptionSelected}
+              // onOptionSelected={handleOptionSelected}
               topic={topic}
             />
           ) : (
             <div className="p-6 rounded-md shadow-md w-full max-w-lg mx-auto mt-10">
               <h2 className="text-xl font-semibold mb-4">
-                Asking AI for a {topic} trivia question
+                Asking AI for {topic} trivia question
                 <LoadingDots />
               </h2>
             </div>
