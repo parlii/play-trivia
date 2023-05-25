@@ -65,10 +65,18 @@ export default async function handler(
   const { question, userSelectedOption } = req.body;
   console.log(question, userSelectedOption);
 
+  const input = await prompt.format({
+    topic: topic,
+    question: JSON.stringify(question),
+    answer: userSelectedOption,
+  });
+
+  console.log(input);
+
   try {
     // Use the chain to generate a question
     const response = await chain.call({
-      question: question,
+      question: JSON.stringify(question),
       answer: userSelectedOption,
       topic: topic,
     });

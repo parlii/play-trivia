@@ -23,7 +23,7 @@ const TriviaQuestion: React.FC<TriviaQuestionProps> = ({
     setSelectedOption(userSelectedOption);
     setLoadingOption(userSelectedOption);
 
-    const response = await fetch("/api/checkAnswer?topic=${topic}", {
+    const response = await fetch(`/api/checkAnswer?topic=${topic}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ question, userSelectedOption }),
