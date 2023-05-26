@@ -19,7 +19,7 @@ const formatInstructions = parser.getFormatInstructions();
 
 // Initialize the PromptTemplate
 const prompt = new PromptTemplate({
-  template: `Generate a concise random trivia topic, ensuring it's unique and not among or necessairly related to the previously used topics: {pastTopics}. Avoid repetition.`,
+  template: `Generate a single-word or short phrase topic for a trivia game that covers a specific field of knowledge or interest. Example topics: Dinosaurs, Inventions, Mythology, Literature, Composers, Painters, World Capitals, Olympic Games, Nobel Laureates, Astronomy, World Cuisines, Movie Directors, Famous Battles, National Parks,Marine Life, Ancient Civilizations, Scientific Discoveries, Board Games, World Religions. However, certain topics have already been used. Do not repeat these: {pastTopics}.`,
   inputVariables: ["pastTopics"],
   //   partialVariables: { format_instructions: formatInstructions },
 });
