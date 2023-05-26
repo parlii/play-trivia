@@ -6,9 +6,7 @@ import {
 
 import { LLMChain } from "langchain/chains";
 import { OpenAI } from "langchain/llms/openai";
-import { OpenAIModel } from "@/app/models/openAIModels";
 import { PromptTemplate } from "langchain/prompts";
-import { Question } from "@/app/questions";
 import { z } from "zod";
 
 const parser = StructuredOutputParser.fromZodSchema(
