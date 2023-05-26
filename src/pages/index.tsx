@@ -19,7 +19,7 @@ export default function HomePage() {
   const router = useRouter();
 
   const resetOptions = () => {
-    setInputValue("");
+    setInputValue("Nepal");
     setDifficulty("Easy");
     setLanguage("English");
     setTopic("");
