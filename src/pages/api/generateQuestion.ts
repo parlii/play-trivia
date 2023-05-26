@@ -16,7 +16,7 @@ const parser = StructuredOutputParser.fromZodSchema(
     options: z
       .array(z.string().describe("4 options for the trivia question"))
       .length(4),
-    answer: z.string().describe("correct answer to the trivia question"),
+    // answer: z.string().describe("correct answer to the trivia question"),
   })
 );
 
@@ -24,8 +24,8 @@ const formatInstructions = parser.getFormatInstructions();
 
 // Initialize the PromptTemplate
 const prompt = new PromptTemplate({
-  template: `Generate a trivia question about this topic: {topic}. Difficulty level: {level}\n{format_instructions}`,
-  inputVariables: ["level", "topic"],
+  template: `Generate a trivia question about this topic: {topic}. Difficulty level: {level}. Instructions: Please do not repeat these past questions: {pastQuestions}. Please generate the entire question and options in this language: {language} \n{format_instructions}`,
+  inputVariables: ["level", "topic", "pastQuestions", "language"],
   partialVariables: { format_instructions: formatInstructions },
 });
 
@@ -39,27 +39,48 @@ const model = new OpenAI({
 // Initialize an LLMChain with the OpenAI model and the prompt
 const chain = new LLMChain({ llm: model, prompt: prompt });
 
+interface MyNextApiRequest extends NextApiRequest {
+  body: {
+    topic: string;
+    pastQuestions: Question[];
+    difficulty: string;
+    language: string;
+  };
+}
+
 // Export the handler
 export default async function handler(
-  req: NextApiRequest,
+  req: MyNextApiRequest,
   res: NextApiResponse
 ) {
-  if (req.method !== "GET") {
+  if (req.method !== "POST") {
     return res.status(405).json({ message: "Method not allowed" });
   }
 
-  const topic: string = req.query.topic as string;
+  const { topic, pastQuestions, difficulty, language } = req.body; // Change this line
 
-  // const input = await prompt.format({
-  //   level: "easy",
-  //   topic: topic,
-  // });
+  // Format pastQuestions into a string
+  const pastQuestionsStr = pastQuestions
+    .map((q) => `Question: ${q.question}`)
+    .join("\n");
 
-  // console.log(input);
+  const input = await prompt.format({
+    level: difficulty,
+    topic: topic,
+    pastQuestions: pastQuestionsStr,
+    language: language,
+  });
+
+  console.log(input);
 
   try {
     // Use the chain to generate a question
-    const response = await chain.call({ level: "hard", topic: topic });
+    const response = await chain.call({
+      level: difficulty,
+      topic: topic,
+      language: language,
+      pastQuestions: pastQuestionsStr,
+    });
 
     try {
       const parsedResponse: Question = await parser.parse(response.text);
