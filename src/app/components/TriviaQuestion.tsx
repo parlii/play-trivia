@@ -45,8 +45,10 @@ const TriviaQuestion: React.FC<TriviaQuestionProps> = ({
 
   return (
     <div className="p-6 rounded-md shadow-md w-full max-w-lg mx-auto mt-2">
-      <h2 className="text-xl font-semibold mb-4">{question.question}</h2>
-      <div className="grid grid-cols-2 gap-4">
+      <h2 className="text-lg sm:text-xl font-semibold mb-4">
+        {question.question}
+      </h2>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {question.options.map((option, index) => {
           const isSelected = selectedOption === option;
           const isOptionCorrect =

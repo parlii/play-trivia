@@ -419,7 +419,7 @@ export default function HomePage() {
         )}
       </div>
       {topic && (
-        <div className="flex justify-center w-full">
+        <div className="flex flex-col justify-center w-full">
           {question && question.options ? (
             <>
               <TriviaQuestion
@@ -427,7 +427,7 @@ export default function HomePage() {
                 // onOptionSelected={handleOptionSelected}
                 topic={topic}
               />
-              <div className="fixed bottom-0 right-0 p-4 space-x-4 flex justify-between items-center w-full">
+              <div className="p-4 space-x-4 flex justify-between items-center w-full mb-4 mt-4">
                 <button
                   className="py-2 px-4 bg-red-500 hover:bg-red-700 text-white font-bold rounded transition-colors"
                   onClick={() => resetOptions()}
