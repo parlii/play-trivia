@@ -244,7 +244,7 @@ export default function HomePage() {
             </p> */}
             </div>
             {slowModelSelected && (
-              <p className="mt-4">
+              <p className="mt-10">
                 <span className="text-gray-500">
                   The selected model {selectedOpenAIModel?.id} tends to run
                   slow.
@@ -419,7 +419,7 @@ export default function HomePage() {
         )}
       </div>
       {topic && (
-        <div className="flex justify-center w-full mt-4">
+        <div className="flex justify-center w-full">
           {question && question.options ? (
             <>
               <TriviaQuestion
