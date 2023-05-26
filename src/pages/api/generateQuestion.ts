@@ -6,6 +6,7 @@ import {
 
 import { LLMChain } from "langchain/chains";
 import { OpenAI } from "langchain/llms/openai";
+import { OpenAIModel } from "@/app/models/openAIModels";
 import { PromptTemplate } from "langchain/prompts";
 import { Question } from "@/app/questions";
 import { z } from "zod";
@@ -29,22 +30,13 @@ const prompt = new PromptTemplate({
   partialVariables: { format_instructions: formatInstructions },
 });
 
-// You can initialize the model using the environment variables as per LangChain documentation
-const model = new OpenAI({
-  openAIApiKey: process.env.OPENAI_API_KEY,
-  temperature: 0.5,
-  modelName: "gpt-3.5-turbo",
-});
-
-// Initialize an LLMChain with the OpenAI model and the prompt
-const chain = new LLMChain({ llm: model, prompt: prompt });
-
 interface MyNextApiRequest extends NextApiRequest {
   body: {
     topic: string;
     pastQuestions: Question[];
     difficulty: string;
     language: string;
+    selectedOpenAIModel: OpenAIModel;
   };
 }
 
@@ -57,7 +49,8 @@ export default async function handler(
     return res.status(405).json({ message: "Method not allowed" });
   }
 
-  const { topic, pastQuestions, difficulty, language } = req.body; // Change this line
+  const { topic, pastQuestions, difficulty, language, selectedOpenAIModel } =
+    req.body; // Change this line
 
   // Format pastQuestions into a string
   const pastQuestionsStr = pastQuestions
@@ -74,6 +67,16 @@ export default async function handler(
   console.log(input);
 
   try {
+    // You can initialize the model using the environment variables as per LangChain documentation
+    const model = new OpenAI({
+      openAIApiKey: process.env.OPENAI_API_KEY,
+      temperature: 0.5,
+      modelName: selectedOpenAIModel.id,
+    });
+
+    // Initialize an LLMChain with the OpenAI model and the prompt
+    const chain = new LLMChain({ llm: model, prompt: prompt });
+
     // Use the chain to generate a question
     const response = await chain.call({
       level: difficulty,
