@@ -23,14 +23,18 @@ const TriviaQuestion: React.FC<TriviaQuestionProps> = ({
     setSelectedOption(userSelectedOption);
     setLoadingOption(userSelectedOption);
 
-    const response = await fetch(`/api/checkAnswer?topic=${topic}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ question, userSelectedOption }),
-    });
-    const data: CheckAnswerResponse = await response.json();
+    try {
+      const response = await fetch(`/api/checkAnswer?topic=${topic}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question, userSelectedOption }),
+      });
+      const data: CheckAnswerResponse = await response.json();
+      setcheckAnswerResponse(data);
+    } catch (e) {
+      alert(e);
+    }
 
-    setcheckAnswerResponse(data);
     setLoadingOption(null);
   };
 
@@ -75,7 +79,7 @@ const TriviaQuestion: React.FC<TriviaQuestionProps> = ({
       {loadingOption && (
         <p className="mt-4 text-center">
           Asking AI if your response is correct
-          <LoadingDots />
+          <LoadingDots dotLength={9} />
         </p>
       )}
     </div>

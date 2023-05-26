@@ -5,6 +5,7 @@ import {
 import { useEffect, useState } from "react";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import LoadingDots from "@/app/components/LoadingDots";
 import Navbar from "@/app/components/NavBar";
 import { OpenAIModel } from "../app/models/openAIModels";
 import { Question } from "../app/questions";
@@ -49,23 +50,6 @@ export default function HomePage() {
       setSlowModelSelected(false);
     }
   }, [selectedOpenAIModel]);
-
-  const LoadingDots = ({ dotLength }: { dotLength: number }) => {
-    if (dotLength > 9 || dotLength < 1) {
-      dotLength = 9;
-    }
-    const [dots, setDots] = useState("");
-
-    useEffect(() => {
-      const timer = setInterval(() => {
-        setDots((dots) => (dots.length < dotLength ? dots + "." : ""));
-      }, 500); // This will update every half second
-
-      return () => clearInterval(timer); // Clear interval on unmount
-    }, []);
-
-    return <span>{dots}</span>;
-  };
 
   const getRandomTriviaTopic = async () => {
     let newPastTopics = pastTopics;
@@ -185,6 +169,7 @@ export default function HomePage() {
       setQuestion(data);
     } catch (error) {
       console.error("Failed to load question", error);
+      alert(error);
     }
   };
 
@@ -258,12 +243,11 @@ export default function HomePage() {
               Mistakes: {mistakes}
             </p> */}
             </div>
-            {slowModelSelected && env == "production" && (
+            {slowModelSelected && (
               <p className="mt-4">
                 <span className="text-gray-500">
-                  This model is slow and tends to timeout in production due to
-                  the 10s gateway timeout limit vercel has for free users.
-                  Please use another model or run locally!
+                  The selected model {selectedOpenAIModel?.id} tends to run
+                  slow.
                 </span>
               </p>
             )}
