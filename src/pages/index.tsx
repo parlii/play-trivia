@@ -216,8 +216,8 @@ export default function HomePage() {
                 Trivia Topic: {topic}
               </p>
             </div>
-            <div className="flex justify-between items-center items-start w-full">
-              <p className="text-gray-700 dark:text-gray-300  mr-6">
+            <div className="grid md:flex gap-4 grid-cols-2 justify-between items-center md:items-start w-full">
+              <p className="text-gray-700 dark:text-gray-300 mr-6">
                 Difficulty{" "}
                 <p className="text-lg font-medium text-gray-700 dark:text-gray-300">
                   {difficulty}
