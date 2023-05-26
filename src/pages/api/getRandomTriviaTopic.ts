@@ -7,6 +7,8 @@ import {
 import { LLMChain } from "langchain/chains";
 import { OpenAI } from "langchain/llms/openai";
 import { PromptTemplate } from "langchain/prompts";
+import rateLimit from "@/utils/ratelimit";
+import requestIp from "request-ip";
 import { z } from "zod";
 
 const parser = StructuredOutputParser.fromZodSchema(
@@ -34,11 +36,24 @@ const model = new OpenAI({
 // Initialize an LLMChain with the OpenAI model and the prompt
 const chain = new LLMChain({ llm: model, prompt: prompt });
 
+const limiter = rateLimit({
+  interval: 10 * 1000, // 10 seconds
+  uniqueTokenPerInterval: 100, // Max 100 users per second
+});
+
 // Export the handler
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  const detectedIp = requestIp.getClientIp(req) || "127.0.0.1";
+
+  try {
+    await limiter.check(res, 10, detectedIp); // 10 requests per 10 seconds
+  } catch {
+    res.status(429).json({ error: "Rate limit exceeded" });
+  }
+
   if (req.method !== "GET") {
     return res.status(405).json({ message: "Method not allowed" });
   }
