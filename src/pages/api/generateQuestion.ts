@@ -25,7 +25,7 @@ const formatInstructions = parser.getFormatInstructions();
 
 // Initialize the PromptTemplate
 const prompt = new PromptTemplate({
-  template: `Generate a trivia question about this topic: {topic}. Difficulty level: {level}. Instructions: Please do not repeat these past questions: {pastQuestions}. Please generate the entire question and options in this language: {language} \n{format_instructions}`,
+  template: `Generate a trivia question about this topic: {topic}. The difficulty level of this question should be: {level}. Instructions: Please do not repeat these past questions: {pastQuestions}. Please generate the entire question and options in this language: {language} \n{format_instructions}`,
   inputVariables: ["level", "topic", "pastQuestions", "language"],
   partialVariables: { format_instructions: formatInstructions },
 });

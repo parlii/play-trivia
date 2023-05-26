@@ -1,3 +1,7 @@
+import {
+  faInfoCircle,
+  faWandMagicSparkles,
+} from "@fortawesome/free-solid-svg-icons";
 import { useEffect, useState } from "react";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -5,7 +9,6 @@ import Navbar from "@/app/components/NavBar";
 import { OpenAIModel } from "../app/models/openAIModels";
 import { Question } from "../app/questions";
 import TriviaQuestion from "../app/components/TriviaQuestion";
-import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { faRedo } from "@fortawesome/free-solid-svg-icons";
 import { useRouter } from "next/router";
 
@@ -16,7 +19,7 @@ export default function HomePage() {
   const [question, setQuestion] = useState<Question | null>(null);
   const [pastQuestions, setPastQuestions] = useState<Question[]>([]); // Add this line
   const [topic, setTopic] = useState<string>("");
-  const [topicInputValue, setInputValue] = useState("Nepal");
+  const [topicInputValue, setInputValue] = useState("");
   const [difficulty, setDifficulty] = useState("Easy"); // default difficulty to 'Easy'
   const [language, setLanguage] = useState("English"); // default language to 'English'
   const [selectedOpenAIModel, setSelectedOpenAIModel] =
@@ -27,14 +30,25 @@ export default function HomePage() {
   const [temperature, setTemperature] = useState(0.5); // default temperature to 0.5
   const [pastTopics, setPastTopics] = useState<string[]>([]);
   const [loadingRandomTopic, setLoadingRandomTopic] = useState(false);
+  const [slowModelSelected, setSlowModelSelected] = useState(false);
 
   const router = useRouter();
+
+  const env = process.env.NODE_ENV;
 
   const resetOptions = () => {
     setTopic("");
     setQuestion(null);
     setPastQuestions([]);
   };
+
+  useEffect(() => {
+    if (selectedOpenAIModel?.id.includes("gpt-4")) {
+      setSlowModelSelected(true);
+    } else {
+      setSlowModelSelected(false);
+    }
+  }, [selectedOpenAIModel]);
 
   const LoadingDots = ({ dotLength }: { dotLength: number }) => {
     if (dotLength > 9 || dotLength < 1) {
@@ -244,6 +258,15 @@ export default function HomePage() {
               Mistakes: {mistakes}
             </p> */}
             </div>
+            {slowModelSelected && env == "production" && (
+              <p className="mt-4">
+                <span className="text-gray-500">
+                  This model is slow and tends to timeout in production due to
+                  the 10s gateway timeout limit vercel has for free users.
+                  Please use another model or run locally!
+                </span>
+              </p>
+            )}
           </div>
         ) : (
           <div className="flex bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
@@ -260,15 +283,13 @@ export default function HomePage() {
                   className="ml-2 px-4 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-700 transition-colors relative group"
                   onClick={getRandomTriviaTopic}
                   disabled={loadingRandomTopic}
+                  title="Ask AI for a random trivia topic"
                 >
                   {loadingRandomTopic ? (
                     <LoadingDots dotLength={5} />
                   ) : (
-                    <FontAwesomeIcon icon={faRedo} />
+                    <FontAwesomeIcon icon={faWandMagicSparkles} />
                   )}
-                  <span className="fixed top-0 left-0 ml-4 mt-[-30px] text-sm text-white bg-black px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                    Click to fetch a new trivia topic
-                  </span>
                 </button>
               </div>
               <div className="mb-4">
