@@ -419,7 +419,7 @@ export default function HomePage() {
         )}
       </div>
       {topic && (
-        <div className="flex justify-center w-full p-4">
+        <div className="flex justify-center w-full mt-4">
           {question && question.options ? (
             <>
               <TriviaQuestion
