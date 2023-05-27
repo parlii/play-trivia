@@ -9,6 +9,7 @@ import { OpenAI } from "langchain/llms/openai";
 import { OpenAIModel } from "@/app/models/openAIModels";
 import { PromptTemplate } from "langchain/prompts";
 import { Question } from "@/app/questions";
+import { isRateLimitedAPI } from "@/utils/ratelimit";
 import { z } from "zod";
 
 const parser = StructuredOutputParser.fromZodSchema(
@@ -45,6 +46,11 @@ export default async function handler(
   req: MyNextApiRequest,
   res: NextApiResponse
 ) {
+  const rateLimited = await isRateLimitedAPI(req, res);
+  if (rateLimited) {
+    return res.status(429).json({ message: "Too many requests" });
+  }
+
   if (req.method !== "POST") {
     return res.status(405).json({ message: "Method not allowed" });
   }

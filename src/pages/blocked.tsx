@@ -5,6 +5,13 @@ export default function Blocked() {
         <h3 className="text-xl font-semibold text-red-600">
           Too many requests. Access blocked. Try again later!
         </h3>
+
+        <a
+          href="/"
+          className="inline-block px-4 py-2 mt-4 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-500"
+        >
+          Go back to home page
+        </a>
       </main>
     </div>
   );

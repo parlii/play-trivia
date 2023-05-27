@@ -7,7 +7,7 @@ import {
 import { LLMChain } from "langchain/chains";
 import { OpenAI } from "langchain/llms/openai";
 import { PromptTemplate } from "langchain/prompts";
-import rateLimit from "@/utils/ratelimit";
+import { isRateLimitedAPI } from "@/utils/ratelimit";
 import requestIp from "request-ip";
 import { z } from "zod";
 
@@ -21,7 +21,7 @@ const formatInstructions = parser.getFormatInstructions();
 
 // Initialize the PromptTemplate
 const prompt = new PromptTemplate({
-  template: `Generate a single-word or short phrase topic for a trivia game that covers a specific field of knowledge or interest. Example topics: Dinosaurs, Inventions, Mythology, Literature, Composers, Painters, World Capitals, Olympic Games, Nobel Laureates, Astronomy, World Cuisines, Movie Directors, Famous Battles, National Parks,Marine Life, Ancient Civilizations, Scientific Discoveries, Board Games, World Religions. However, certain topics have already been used. Do not repeat these: {pastTopics}.`,
+  template: `Generate a single-word or short phrase topic for a trivia game that covers a specific field of knowledge or interest. It can be one of these or an entirely new topic: Dinosaurs, Inventions, Mythology, Literature, Composers, Painters, World Capitals, Olympic Games, Nobel Laureates, Astronomy, World Cuisines, Famous Battles, National Parks, Marine Life, Ancient Civilizations, Scientific Discoveries, Board Games, World Religions. However, certain topics have already been used. For example, Do not repeat these topics: {pastTopics}.`,
   inputVariables: ["pastTopics"],
   //   partialVariables: { format_instructions: formatInstructions },
 });
@@ -36,22 +36,14 @@ const model = new OpenAI({
 // Initialize an LLMChain with the OpenAI model and the prompt
 const chain = new LLMChain({ llm: model, prompt: prompt });
 
-const limiter = rateLimit({
-  interval: 10 * 1000, // 10 seconds
-  uniqueTokenPerInterval: 100, // Max 100 users per second
-});
-
 // Export the handler
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const detectedIp = requestIp.getClientIp(req) || "127.0.0.1";
-
-  try {
-    await limiter.check(res, 10, detectedIp); // 10 requests per 10 seconds
-  } catch {
-    res.status(429).json({ error: "Rate limit exceeded" });
+  const rateLimited = await isRateLimitedAPI(req, res);
+  if (rateLimited) {
+    return res.status(429).json({ message: "Too many requests" });
   }
 
   if (req.method !== "GET") {

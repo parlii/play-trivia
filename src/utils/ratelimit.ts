@@ -1,35 +1,43 @@
-import { LRUCache } from "lru-cache";
-import type { NextApiResponse } from "next";
+import { NextApiRequest, NextApiResponse } from "next";
+import { NextRequest, NextResponse } from "next/server";
 
-type Options = {
-  uniqueTokenPerInterval?: number;
-  interval?: number;
-};
+import { Ratelimit } from "@upstash/ratelimit";
+import { Redis } from "@upstash/redis";
+import requestIp from "request-ip";
 
-export default function rateLimit(options?: Options) {
-  const tokenCache = new LRUCache({
-    max: options?.uniqueTokenPerInterval || 500,
-    ttl: options?.interval || 60000,
-  });
+const UPSTASH_REDIS_REST_URL = process.env.UPSTASH_REDIS_REST_URL || "";
+const UPSTASH_REDIS_REST_TOKEN = process.env.UPSTASH_REDIS_REST_TOKEN || "";
 
-  return {
-    check: (res: NextApiResponse, limit: number, token: string) =>
-      new Promise<void>((resolve, reject) => {
-        const tokenCount = (tokenCache.get(token) as number[]) || [0];
-        if (tokenCount[0] === 0) {
-          tokenCache.set(token, tokenCount);
-        }
-        tokenCount[0] += 1;
+const redis = new Redis({
+  url: UPSTASH_REDIS_REST_URL,
+  token: UPSTASH_REDIS_REST_TOKEN,
+});
 
-        const currentUsage = tokenCount[0];
-        const isRateLimited = currentUsage >= limit;
-        res.setHeader("X-RateLimit-Limit", limit);
-        res.setHeader(
-          "X-RateLimit-Remaining",
-          isRateLimited ? 0 : limit - currentUsage
-        );
+const ratelimit = new Ratelimit({
+  redis: redis,
+  limiter: Ratelimit.slidingWindow(5, "10 s"),
+});
 
-        return isRateLimited ? reject() : resolve();
-      }),
-  };
+export async function isRateLimitedAPI(
+  req: NextApiRequest,
+  res: NextApiResponse
+): Promise<boolean> {
+  const ip = requestIp.getClientIp(req) || "127.0.0.1";
+  const { success, pending, limit, reset, remaining } = await ratelimit.limit(
+    ip
+  );
+
+  res.setHeader("X-RateLimit-Limit", limit);
+  res.setHeader("X-RateLimit-Remaining", remaining);
+
+  return !success;
+}
+
+export async function isRateLimitedPage(req: NextRequest): Promise<boolean> {
+  const ip = req.ip || "127.0.0.1";
+  const { success, pending, limit, reset, remaining } = await ratelimit.limit(
+    ip
+  );
+
+  return !success;
 }
