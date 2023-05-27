@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function Blocked() {
   return (
     <div className="flex items-center justify-center bg-gray-100">
@@ -6,12 +8,12 @@ export default function Blocked() {
           Too many requests. Access blocked. Try again later!
         </h3>
 
-        <a
+        <Link
           href="/"
           className="inline-block px-4 py-2 mt-4 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-500"
         >
           Go back to home page
-        </a>
+        </Link>
       </main>
     </div>
   );
