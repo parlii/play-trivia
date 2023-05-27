@@ -9,6 +9,7 @@ import LoadingDots from "@/app/components/LoadingDots";
 import Navbar from "@/app/components/NavBar";
 import { OpenAIModel } from "../app/models/openAIModels";
 import { Question } from "../app/questions";
+import TemperatureSlider from "@/app/components/TemperatureSlider";
 import TriviaQuestion from "../app/components/TriviaQuestion";
 import { faRedo } from "@fortawesome/free-solid-svg-icons";
 import { useRouter } from "next/router";
@@ -401,6 +402,10 @@ export default function HomePage() {
                   />
                 </a>
               </div>
+              <TemperatureSlider
+                temperature={temperature}
+                setTemperature={setTemperature}
+              />
 
               <button
                 className="w-full py-2 px-4 bg-blue-500 hover:bg-blue-700 text-white font-bold rounded transition-colors"
