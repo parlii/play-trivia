@@ -362,7 +362,7 @@ export default function HomePage() {
                   />
                 </a>
               </div>
-              <div className="mb-4 flex items-center">
+              {/* <div className="mb-4 flex items-center">
                 <label
                   htmlFor="spinner"
                   className="font-bold text-gray-700 dark:text-gray-300"
@@ -401,12 +401,11 @@ export default function HomePage() {
                     className="text-gray-500 hover:text-gray-700 cursor-pointer"
                   />
                 </a>
-              </div>
+              </div> */}
               <TemperatureSlider
                 temperature={temperature}
                 setTemperature={setTemperature}
               />
-
               <button
                 className="w-full py-2 px-4 bg-blue-500 hover:bg-blue-700 text-white font-bold rounded transition-colors"
                 onClick={() => {
