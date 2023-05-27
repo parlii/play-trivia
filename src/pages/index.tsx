@@ -402,10 +402,10 @@ export default function HomePage() {
                   />
                 </a>
               </div> */}
-              <TemperatureSlider
+              {/* <TemperatureSlider
                 temperature={temperature}
                 setTemperature={setTemperature}
-              />
+              /> */}
               <button
                 className="w-full py-2 px-4 bg-blue-500 hover:bg-blue-700 text-white font-bold rounded transition-colors"
                 onClick={() => {
