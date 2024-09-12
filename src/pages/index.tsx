@@ -6,13 +6,8 @@ import { useEffect, useState } from "react";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import LoadingDots from "@/app/components/LoadingDots";
-import Navbar from "@/app/components/NavBar";
-import { OpenAIModel } from "../app/models/openAIModels";
 import { Question } from "../app/questions";
-import TemperatureSlider from "@/app/components/TemperatureSlider";
 import TriviaQuestion from "../app/components/TriviaQuestion";
-import { faRedo } from "@fortawesome/free-solid-svg-icons";
-import { useRouter } from "next/router";
 
 export default function HomePage() {
   // const [score, setScore] = useState(0);
@@ -24,33 +19,15 @@ export default function HomePage() {
   const [topicInputValue, setInputValue] = useState("");
   const [difficulty, setDifficulty] = useState("Easy"); // default difficulty to 'Easy'
   const [language, setLanguage] = useState("English"); // default language to 'English'
-  const [selectedOpenAIModel, setSelectedOpenAIModel] =
-    useState<OpenAIModel | null>();
-  const [availableOpenAIModels, setAvailableOpenAIModels] = useState<
-    OpenAIModel[]
-  >([]); // default model to ''
   const [temperature, setTemperature] = useState(0.5); // default temperature to 0.5
   const [pastTopics, setPastTopics] = useState<string[]>([]);
   const [loadingRandomTopic, setLoadingRandomTopic] = useState(false);
-  const [slowModelSelected, setSlowModelSelected] = useState(false);
-
-  const router = useRouter();
-
-  const env = process.env.NODE_ENV;
 
   const resetOptions = () => {
     setTopic("");
     setQuestion(null);
     setPastQuestions([]);
   };
-
-  useEffect(() => {
-    if (selectedOpenAIModel?.id.includes("gpt-4")) {
-      setSlowModelSelected(true);
-    } else {
-      setSlowModelSelected(false);
-    }
-  }, [selectedOpenAIModel]);
 
   const getRandomTriviaTopic = async () => {
     let newPastTopics = pastTopics;
@@ -72,71 +49,13 @@ export default function HomePage() {
           },
         }
       );
+      const topic = await response.text();
+      const cleanTopic = topic.replace(/[^\w\s]/gi, "");
       console.log(response);
-      const data = await response.json();
-      setInputValue(data?.topic);
+      setInputValue(cleanTopic);
       setLoadingRandomTopic(false);
     } catch (error) {
       console.error(error);
-    }
-  };
-
-  // useEffect(() => {
-  //   const timerId = setInterval(() => {
-  //     setRemainingTime((prevRemainingTime) => prevRemainingTime - 1);
-  //   }, 1000);
-
-  //   return () => clearInterval(timerId);
-  // }, []);
-
-  // useEffect(() => {
-  //   if (remainingTime <= 0) {
-  //     router.push({
-  //       pathname: "/gameover",
-  //       query: { score },
-  //     });
-  //   }
-  // }, [remainingTime]);
-
-  useEffect(() => {
-    loadModels();
-  }, []);
-
-  const loadModels = async () => {
-    try {
-      const response = await fetch(`/api/loadModels`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      const data = await response.json();
-      console.log(data);
-      // loop through data and store in availableModels if data.owned_by = 'openai'
-      let models: OpenAIModel[] = [];
-      for (let i = 0; i < data.data.length; i++) {
-        // if owned_by is openai and id does not include a : and id does not include beta or edit and id does not include "if"
-        if (
-          data.data[i].owned_by == "openai" &&
-          !data.data[i].id.includes(":") &&
-          !data.data[i].id.includes("beta") &&
-          !data.data[i].id.includes("edit") &&
-          !data.data[i].id.includes("if") &&
-          !data.data[i].id.includes("001") &&
-          data.data[i].id.includes("-")
-        ) {
-          models.push(data.data[i]);
-        }
-      }
-      setAvailableOpenAIModels(models);
-      // find model with id 'gpt-3.5-turbo' and set it as selectedOpenAIModel by default
-      for (let i = 0; i < models.length; i++) {
-        if (models[i].id == "gpt-3.5-turbo") {
-          setSelectedOpenAIModel(models[i]);
-        }
-      }
-    } catch (error) {
-      console.error("Failed to load models", error);
     }
   };
 
@@ -163,7 +82,7 @@ export default function HomePage() {
           pastQuestions: newPastQuestions,
           difficulty: difficulty,
           language: language, // include language in the POST request
-          selectedOpenAIModel: selectedOpenAIModel,
+          selectedOpenAIModel: 'gpt-4o-mini',
         }),
       });
       const data = await response.json();
@@ -230,13 +149,6 @@ export default function HomePage() {
                   {language}
                 </p>
               </p>
-              <p className=" text-gray-700 dark:text-gray-300 mr-6">
-                GPT Model
-                <p className="text-lg font-medium text-gray-700 dark:text-gray-300">
-                  {" "}
-                  {selectedOpenAIModel?.id}
-                </p>
-              </p>
               {/* <p className="text-lg font-medium text-gray-700 dark:text-gray-300">
               Score: {score}
             </p> */}
@@ -244,14 +156,6 @@ export default function HomePage() {
               Mistakes: {mistakes}
             </p> */}
             </div>
-            {slowModelSelected && (
-              <p className="mt-10">
-                <span className="text-gray-500">
-                  The selected model {selectedOpenAIModel?.id} tends to run
-                  slow.
-                </span>
-              </p>
-            )}
           </div>
         ) : (
           <div className="flex bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
@@ -328,39 +232,6 @@ export default function HomePage() {
                   <option value="Cantonese">Cantonese</option>
                   <option value="Mandarin">Mandarin</option>
                 </select>
-              </div>
-              <div className="mb-4">
-                <span className="font-bold text-gray-700 dark:text-gray-300">
-                  Model:
-                </span>
-                <select
-                  value={selectedOpenAIModel?.id}
-                  className="ml-4 px-4 py-2 rounded-lg bg-gray-200 dark:bg-gray-600 dark:text-white outline-none focus:bg-gray-300 dark:focus:bg-gray-500 transition-colors"
-                  onChange={(e) => {
-                    const modelId = e.target.value;
-                    const selectedModel = availableOpenAIModels.find(
-                      (model) => model.id === modelId
-                    );
-                    setSelectedOpenAIModel(selectedModel);
-                  }}
-                >
-                  {availableOpenAIModels?.map((model) => (
-                    <option key={model.id} value={model.id}>
-                      {model.id}
-                    </option>
-                  ))}
-                </select>
-                <a
-                  href="https://platform.openai.com/docs/models/overview"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="ml-2"
-                >
-                  <FontAwesomeIcon
-                    icon={faInfoCircle}
-                    className="text-gray-500 hover:text-gray-700 cursor-pointer"
-                  />
-                </a>
               </div>
               {/* <div className="mb-4 flex items-center">
                 <label

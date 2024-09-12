@@ -43,8 +43,8 @@ const prompt = new PromptTemplate({
 // You can initialize the model using the environment variables as per LangChain documentation
 const model = new OpenAI({
   openAIApiKey: process.env.OPENAI_API_KEY,
-  temperature: 0.5,
-  modelName: "gpt-3.5-turbo",
+  temperature: 0.1,
+  modelName: "gpt-4o-mini",
 });
 
 // Initialize an LLMChain with the OpenAI model and the prompt

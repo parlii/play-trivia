@@ -6,7 +6,6 @@ import {
 
 import { LLMChain } from "langchain/chains";
 import { OpenAI } from "langchain/llms/openai";
-import { OpenAIModel } from "@/app/models/openAIModels";
 import { PromptTemplate } from "langchain/prompts";
 import { Question } from "@/app/questions";
 import { isRateLimitedAPI } from "@/utils/ratelimit";
@@ -37,7 +36,6 @@ interface MyNextApiRequest extends NextApiRequest {
     pastQuestions: Question[];
     difficulty: string;
     language: string;
-    selectedOpenAIModel: OpenAIModel;
   };
 }
 
@@ -55,7 +53,7 @@ export default async function handler(
     return res.status(405).json({ message: "Method not allowed" });
   }
 
-  const { topic, pastQuestions, difficulty, language, selectedOpenAIModel } =
+  const { topic, pastQuestions, difficulty, language } =
     req.body; // Change this line
 
   // Format pastQuestions into a string
@@ -76,8 +74,8 @@ export default async function handler(
     // You can initialize the model using the environment variables as per LangChain documentation
     const model = new OpenAI({
       openAIApiKey: process.env.OPENAI_API_KEY,
-      temperature: 0.5,
-      modelName: selectedOpenAIModel.id,
+      temperature: 0.4,
+      modelName: 'gpt-4o-mini',
     });
 
     // Initialize an LLMChain with the OpenAI model and the prompt
