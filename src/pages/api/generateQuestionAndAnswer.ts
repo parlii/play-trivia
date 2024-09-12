@@ -36,7 +36,6 @@ interface MyNextApiRequest extends NextApiRequest {
     pastQuestions: Question[];
     difficulty: string;
     language: string;
-    selectedOpenAIModel: OpenAIModel;
   };
 }
 
@@ -54,7 +53,7 @@ export default async function handler(
     return res.status(405).json({ message: "Method not allowed" });
   }
 
-  const { topic, pastQuestions, difficulty, language, selectedOpenAIModel } =
+  const { topic, pastQuestions, difficulty, language } =
     req.body; // Change this line
 
   // Format pastQuestions into a string
