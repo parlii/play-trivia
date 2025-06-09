@@ -11,6 +11,7 @@ instructions; nested files override parent guidance. Some setups also check
 - Follow the TypeScript and Next.js patterns already present.
 - Run `npm run lint` before committing so ESLint passes.
 - Document any future test commands here for agents to run.
+  - Run `npm run test` to verify documentation.
 
 ### How the Agent Should Work
 - Focus exploration on the `src` directory.
@@ -36,6 +37,50 @@ This project is a Next.js 13 application written in TypeScript. It serves an AI 
 2. **Answer Checking** – `/api/checkAnswer` accepts the question and user option, queries OpenAI to confirm correctness, and returns an explanation.
 3. **Random Topic** – `/api/getRandomTriviaTopic` suggests a new trivia topic, avoiding previously used ones.
 4. **Rate Limiting** – each API call and page load is limited to 5 requests every 10 seconds per IP using Upstash.
+
+## API Endpoints
+
+### `POST /api/generateQuestion`
+**Body**
+```json
+{
+  "topic": "string",
+  "pastQuestions": [ { "question": "string", "options": ["string"] } ],
+  "difficulty": "string",
+  "language": "string"
+}
+```
+**Returns**
+```json
+{
+  "question": "string",
+  "options": ["string", "string", "string", "string"]
+}
+```
+
+### `POST /api/checkAnswer?topic=<string>`
+**Body**
+```json
+{
+  "question": "string | object",
+  "userSelectedOption": "string"
+}
+```
+**Returns**
+```json
+{
+  "correct": true,
+  "explanation": "string",
+  "correct_answer": "string",
+  "confidence": "high" | "medium" | "low"
+}
+```
+
+### `GET /api/getRandomTriviaTopic?pastTopics=<comma-separated>`
+Returns a string topic in the response body.
+
+### `POST /api/generateQuestionAndAnswer`
+Same input and output as `generateQuestion`. Currently unused but kept for reference.
 
 ## Development Notes
 
