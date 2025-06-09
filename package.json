@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "tsc src/utils/parse.ts --outDir dist --module CommonJS --target ES2019 && node tests/parse.test.js"
+    "test": "tsc src/utils/parse.ts --outDir dist --module CommonJS --target ES2019 && node tests/parse.test.js && node scripts/test-docs.js"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.4.0",
