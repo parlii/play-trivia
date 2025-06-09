@@ -1,5 +1,22 @@
 # Repository Guide for LLM Agents
 
+## Using `AGENTS.md`
+
+This Markdown document explains how LLM agents should work in this repository.
+You may place additional `AGENTS.md` files in subfolders for more specific
+instructions; nested files override parent guidance. Some setups also check
+`.currsorrules` or `CLAUDE.md` for organization-wide policies.
+
+### Contribution Guidelines
+- Follow the TypeScript and Next.js patterns already present.
+- Run `npm run lint` before committing so ESLint passes.
+- Document any future test commands here for agents to run.
+
+### How the Agent Should Work
+- Focus exploration on the `src` directory.
+- Keep pull request messages concise with **Summary** and **Testing** sections.
+- Update documentation whenever new features are added.
+
 This project is a Next.js 13 application written in TypeScript. It serves an AI powered trivia game that generates questions with OpenAI via LangChain. The repository uses the classic `pages` router while placing reusable components under `src/app`.
 
 ## Directory Overview
