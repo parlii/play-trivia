@@ -1,29 +1,9 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import {
-  OutputFixingParser,
-  StructuredOutputParser,
-} from "langchain/output_parsers";
-
-import { LLMChain } from "langchain/chains";
-import { OpenAI } from "langchain/llms/openai";
-import { PromptTemplate } from "langchain/prompts";
+import OpenAI from "openai";
 import { isRateLimitedAPI } from "@/utils/ratelimit";
+import { parseJsonResponse } from "@/utils/parse";
 
-// Initialize the PromptTemplate
-const prompt = new PromptTemplate({
-  template: `Generate a single-word or short phrase topic for a trivia game that covers a specific field of knowledge or interest. It can be one of these or an entirely new topic: Dinosaurs, Inventions, Mythology, Literature, Composers, Painters, World Capitals, Olympic Games, Nobel Laureates, Astronomy, World Cuisines, Famous Battles, National Parks, Marine Life, Ancient Civilizations, Scientific Discoveries, Board Games, World Religions. However, certain topics have already been used. For example, Do not repeat these topics: {pastTopics}.`,
-  inputVariables: ["pastTopics"]
-});
-
-// You can initialize the model using the environment variables as per LangChain documentation
-const model = new OpenAI({
-  openAIApiKey: process.env.OPENAI_API_KEY,
-  temperature: 0.8,
-  modelName: "gpt-4o-mini",
-});
-
-// Initialize an LLMChain with the OpenAI model and the prompt
-const chain = new LLMChain({ llm: model, prompt: prompt });
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 // Export the handler
 export default async function handler(
@@ -40,14 +20,27 @@ export default async function handler(
   }
   const pastTopics = req.query.pastTopics as string;
   try {
-    // Use the chain to generate a question
-    const response = await chain.call({
-      pastTopics: pastTopics,
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      temperature: 0.8,
+      messages: [
+        {
+          role: "system",
+          content:
+            'You generate trivia topics. Reply only in JSON with a single key "topic".'
+        },
+        {
+          role: "user",
+          content: `Generate a single-word or short phrase topic for a trivia game that covers a specific field of knowledge or interest. Avoid these topics: ${pastTopics}.`,
+        },
+      ],
+      response_format: { type: "json_object" },
     });
 
-    const parsedResponse = response.text;
-    console.log(parsedResponse);
-    res.status(200).json(parsedResponse);
+    const data = parseJsonResponse<{ topic: string }>(
+      completion.choices[0].message?.content
+    );
+    res.status(200).json(data.topic);
   } catch (err) {
     console.error("Failed to generate question: ", err);
     res.status(500).json({ message: "Failed to generate question" });
