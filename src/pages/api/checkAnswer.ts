@@ -18,10 +18,10 @@ const parser = StructuredOutputParser.fromZodSchema(
       .describe(
         "explanation of why the user choosen userAnswer is correct/incorrect and a description of the correct userAnswer"
       ),
-    correct_userAnswer: z
+    correct_answer: z
       .string()
       .describe(
-        "the correct userAnswer from the 4 options listed to the trivia question"
+        "the correct answer from the 4 options listed to the trivia question"
       ),
     confidence: z
       .enum(["high", "medium", "low"])
